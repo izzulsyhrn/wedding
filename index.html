@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A beautiful, romantic wedding website">
+  <title>Wedding Website</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f9;
+      color: #333;
+    }
+    header, nav, section, footer {
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    #gate {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: url('./images/wedding-gate.jpg') center/cover no-repeat;
+    }
+    #gate button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #d4a5a5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      background: #d4a5a5;
+      padding: 10px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    section {
+      max-width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      display: none;
+    }
+    section.active {
+      display: block !important;
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
+    section h2 {
+      text-align: center;
+    }
+    section p, form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      section {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      section {
+        max-width: 900px;
+      }
+      nav {
+        gap: 25px;
+      }
+    }
+    #rsvp-list {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #rsvp-list ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    #rsvp-list li {
+      background: #d4a5a5;
+      color: #fff;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+    }
+  </style>
+  <script>
+    function enterSite() {
+      document.getElementById('gate').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('gate').style.display = 'none';
+        document.querySelector('header').style.opacity = '1';
+        document.querySelector('nav').style.opacity = '1';
+        document.querySelector('footer').style.opacity = '1';
+        showSection('home');
+      }, 500);
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('section').forEach(section => section.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+    }
+
+    function submitRSVP(event) {
+      event.preventDefault();
+      const name = event.target.querySelector('input[type="text"]').value;
+      const email = event.target.querySelector('input[type="email"]').value;
+      const checkbox = event.target.querySelector('input[type="checkbox"]');
+      
+      if (checkbox.checked) {
+        // Save RSVP data in localStorage
+        const rsvpData = { name, email, attending: checkbox.checked };
+        let rsvps = JSON.parse(localStorage.getItem('rsvps')) || [];
+        rsvps.push(rsvpData);
+        localStorage.setItem('rsvps', JSON.stringify(rsvps));
+
+        // Show thank you message
+        alert(`Thank you, ${name}! We look forward to celebrating with you!`);
+        console.log(`RSVP submitted: Name: ${name}, Email: ${email}`);
+
+        // Reset form fields
+        event.target.reset();
+
+        // Dynamically add the new RSVP to the list without refreshing
+        addRSVPToList(rsvpData);
+      } else {
+        alert('Please confirm your attendance before submitting.');
+      }
+    }
+
+    function addRSVPToList(rsvpData) {
+      const rsvpListContainer = document.getElementById('rsvp-list');
+      const ul = rsvpListContainer.querySelector('ul') || document.createElement('ul');
+
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${rsvpData.name}</strong><br>Email: ${rsvpData.email}<br>Attending: ${rsvpData.attending ? 'Yes' : 'No'}`;
+      ul.appendChild(li);
+
+      rsvpListContainer.appendChild(ul);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const rsvpForm = document.querySelector('#rsvp form');
+      rsvpForm.addEventListener('submit', submitRSVP);
+
+      // Load the existing RSVPs from localStorage and add them to the list
+      const rsvps = JSON.parse(localStorage.getItem('rsvps')) || [];
+      rsvps.forEach(rsvp => addRSVPToList(rsvp));
+    });
+  </script>
+</head>
+<body>
+  <div id="gate">
+    <button onclick="enterSite()">Enter Our Wedding</button>
+  </div>
+
+  <header>
+    <h1>Our Wedding</h1>
+    <p>Join us for our special day</p>
+  </header>
+
+  <nav>
+    <a href="#" onclick="showSection('home')">Home</a>
+    <a href="#" onclick="showSection('our-story')">Our Story</a>
+    <a href="#" onclick="showSection('details')">Event Details</a>
+    <a href="#" onclick="showSection('rsvp')">RSVP</a>
+    <a href="#" onclick="showSection('gallery')">Gallery</a>
+    <a href="#" onclick="showSection('rsvp-list')">RSVP List</a>
+  </nav>
+
+  <section id="home" class="active">
+    <h2>Welcome to Our Wedding</h2>
+    <p>A beautiful love story begins a new chapter.</p>
+  </section>
+
+  <section id="our-story">
+    <h2>Our Story</h2>
+    <p>A tale of love that led to this beautiful day.</p>
+  </section>
+
+  <section id="details">
+    <h2>Event Details</h2>
+    <p>Date: [Your Wedding Date Here]</p>
+    <p>Venue: [Your Wedding Venue Here]</p>
+  </section>
+
+  <section id="rsvp">
+    <h2>RSVP</h2>
+    <form>
+      <input type="text" placeholder="Your Name" required><br>
+      <input type="email" placeholder="Your Email" required><br>
+      <label><input type="checkbox" required> I will attend the wedding</label><br>
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+
+  <section id="gallery">
+    <h2>Gallery</h2>
+    <p>Memories captured beautifully.</p>
+  </section>
+
+  <section id="rsvp-list">
+    <h2>RSVP List</h2>
+    <div id="rsvp-list"></div>
+  </section>
+
+  <footer>
+    <p>&copy; [Your Names] Wedding. All rights reserved.</p>
+  </footer>
+</body>
+</html>
